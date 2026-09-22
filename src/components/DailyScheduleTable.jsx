@@ -1,3 +1,5 @@
+import * as XLSX from 'xlsx'
+
 function StatusSelect({ value, onChange, disabled }) {
   if (disabled) {
     return <span className="row-muted">—</span>
@@ -19,9 +21,45 @@ function formatTanggal(iso) {
   return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })
 }
 
+function exportToExcel(days) {
+  const rows = days.map((d) => ({
+    Tanggal: d.tanggal,
+    Hari: d.hari,
+    'Kuliah 1': d.kuliah1,
+    'Jam 1': d.jam1,
+    'Status 1': d.status1,
+    'Kuliah 2': d.kuliah2,
+    'Jam 2': d.jam2,
+    'Status 2': d.status2,
+    'Jam Kantor Rencana (jam)':
+      d.jamKantorRencana != null ? Number(d.jamKantorRencana.toFixed(2)) : '',
+    'Rencana Perjalanan': d.rencanaHari,
+    'Jam Kantor Aktual (jam)':
+      d.jamKantorAktual != null && d.jamKantorAktual !== '' ? Number(d.jamKantorAktual) : '',
+    Catatan: d.catatan,
+  }))
+
+  const worksheet = XLSX.utils.json_to_sheet(rows)
+  worksheet['!cols'] = [
+    { wch: 10 }, { wch: 8 }, { wch: 24 }, { wch: 14 }, { wch: 9 },
+    { wch: 24 }, { wch: 14 }, { wch: 9 }, { wch: 16 }, { wch: 42 },
+    { wch: 16 }, { wch: 30 },
+  ]
+
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Jadwal Harian')
+  XLSX.writeFile(workbook, 'Jadwal-Harian-Magang-Kuliah.xlsx')
+}
+
 export default function DailyScheduleTable({ days, onChangeDay }) {
   return (
-    <div className="panel" style={{ overflowX: 'auto' }}>
+    <>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+        <button className="btn" onClick={() => exportToExcel(days)}>
+          Unduh Excel
+        </button>
+      </div>
+      <div className="panel" style={{ overflowX: 'auto' }}>
       <table>
         <thead>
           <tr>
@@ -100,6 +138,7 @@ export default function DailyScheduleTable({ days, onChangeDay }) {
           })}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   )
 }

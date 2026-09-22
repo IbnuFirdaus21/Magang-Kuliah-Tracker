@@ -30,6 +30,7 @@ function loadStoredState() {
 
 export default function App() {
   const [page, setPage] = useState('overview')
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [days, setDays] = useState(() => loadStoredState()?.days ?? buildInitialDays())
   const [bolosSebelum, setBolosSebelum] = useState(
     () => loadStoredState()?.bolosSebelum ?? buildInitialBolosSebelum(),
@@ -70,9 +71,19 @@ export default function App() {
 
   return (
     <div className="shell">
-      <Sidebar active={page} onNavigate={setPage} />
+      <Sidebar
+        active={page}
+        onNavigate={setPage}
+        open={mobileNavOpen}
+        onClose={() => setMobileNavOpen(false)}
+      />
       <div className="main">
-        <TopBar page={page} periode={scheduleData.periode} onReset={handleReset} />
+        <TopBar
+          page={page}
+          periode={scheduleData.periode}
+          onReset={handleReset}
+          onMenuClick={() => setMobileNavOpen(true)}
+        />
         <div className="content">
           {page === 'overview' && (
             <OverviewPage totals={totals} weekly={weekly} courses={courses} />

@@ -6,14 +6,21 @@ const TITLES = {
   pengaturan: ['Pengaturan', 'Asumsi dan parameter yang dipakai perhitungan'],
 }
 
-export default function TopBar({ page, periode, onReset }) {
+export default function TopBar({ page, periode, onReset, onMenuClick }) {
   const [title, subtitle] = TITLES[page] || TITLES.overview
   return (
     <header className="topbar">
-      <div>
-        <div className="topbar-title">{title}</div>
-        <div className="topbar-meta">
-          {subtitle} · Periode magang {periode}
+      <div style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
+        <button className="hamburger-btn" onClick={onMenuClick} aria-label="Buka menu">
+          <span className="hamburger-bar" />
+          <span className="hamburger-bar" />
+          <span className="hamburger-bar" />
+        </button>
+        <div>
+          <div className="topbar-title">{title}</div>
+          <div className="topbar-meta">
+            {subtitle} · Periode magang {periode}
+          </div>
         </div>
       </div>
       <button className="btn btn-quiet" onClick={onReset}>
